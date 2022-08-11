@@ -1,0 +1,277 @@
+﻿@page "/analytics"
+@using ChartJs.Blazor.Charts
+@using ChartJs.Blazor.ChartJS.PieChart
+@using ChartJs.Blazor.ChartJS.Common.Properties
+@using ChartJs.Blazor.Util
+@inject IDeviceService service
+<div class="row">
+    <div class="col-lg-3">
+        <div class="iq-card iq-card-block iq-card-stretch iq-card-height">
+            <div class="iq-card-header d-flex justify-content-between">
+                <div class="iq-header-title">
+                    @if (Machines is { })
+                    {
+                        <h6 class="card-title">@Machines.Count ATM Machines</h6>
+                    }
+                    else
+                    {
+                        <h6 class="card-title">ATM Machines</h6>
+                    }
+                </div>
+            </div>
+            <div class="iq-card-body">
+                <div id="sidebar-scrollbar" style="height:300px">
+                    <input class="form-control" placeholder="Search" @bind-value="SearchTerm" @bind-value:event="oninput" @onabort="Refresh" />
+                    <nav class="iq-sidebar-menu">
+                        <ul id="iq-sidebar-toggle" class="iq-menu">
+                            <li>
+                                <a href="#userinfo" class="iq-waves-effect" data-toggle="collapse" aria-expanded="false"><span class="ripple rippleEffect"></span><i class="las la-th-list iq-arrow-left"></i><span>ATM Machines</span><i class="ri-arrow-right-s-line iq-arrow-right"></i></a>
+                                <ul id="userinfo" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle" style="">
+                                    @foreach (var item in Machines)
+                                    {
+                                        <li><a @onclick="(()=>FetchRecord(item))"><i class="las la-id-card-alt"></i>@item</a></li>
+                                    }
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9">
+        <div class="iq-card iq-card-block iq-card-stretch iq-card-height">
+            <div class="iq-card-header d-flex justify-content-between">
+                <div class="iq-header-title">
+                    <h6 class="card-title">
+                        @Name Performance | @NumberOfUpCount<span class="text-success"> <i class="ri-arrow-up-fill"></i></span> |
+                        @NumberOfDownCount<span class="text-danger"> <i class="ri-arrow-down-fill"></i></span> |
+                        @NumberOfOtherCount<span class="text-warning"> <i class="ri-arrow-right-circle-fill"></i></span>
+                    </h6>
+                </div>
+                <div class="mt-2">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="custom-control custom-checkbox custom-checkbox-color-check custom-control-inline">
+                            <div class="row">
+                                <div class="col-lg-9">
+                                    <DateRangePicker Ranges="DateRanges" Drops="DropsType.Down" class="form-control form-control-sm" @bind-StartDate="StartDate" @bind-EndDate="EndDate">
+                                        <PickerTemplate>
+                                            <div id="@context.ParentId" @onclick="context.Toggle" style="background: #fff; cursor: pointer; padding: .45rem 10px; border: 1px solid #ccc; border-radius: 5px;">
+                                                <i class="oi oi-calendar"></i>&nbsp;
+                                                <span>
+                                                    @if (context.TStartDate == null && context.TEndDate == null)
+                                                    {
+                                                        <span>Select dates...</span>
+                                                    }
+                                                    else if (context.TStartDate != null && context.TEndDate == null)
+                                                    {
+                                                        if (context.HoverDate > context.TStartDate)
+                                                        {
+                                                            @($"{context.TStartDate.Value.ToString(context.DateFormat)} - {context.HoverDate.Value.ToString(context.DateFormat)}")
+                                                            @($" - ({(context.HoverDate.Value.Subtract(context.TStartDate.Value).Days).ToString()} nights)")
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@context.TStartDate.Value.ToString("dd/MM/yyyy")</span>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>
+                                                            @context.FormattedRange
+                                                        </span>
+                                                    }
+                                                </span>
+                                                <i class="oi oi-chevron-bottom float-right"></i>
+                                            </div>
+                                        </PickerTemplate>
+                                    </DateRangePicker>
+                                </div>
+                                <div class="col-lg-3">
+                                    <button class="btn bg-danger">Fetch</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="iq-card-body">
+                <ChartJsPieChart @ref="_pieChartJs" Config="@_config" Width="800" Height="400" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<br />
+<hr />
+@code {
+
+
+
+    private string Name = "ATM";
+    DateTimeOffset? StartDate { get; set; } = DateTime.Today.AddYears(-1).AddMonths(-1);
+    DateTimeOffset? EndDate { get; set; } = DateTime.Today.AddDays(1).AddTicks(-1);
+    private PieConfig _config;
+    private ChartJsPieChart _pieChartJs;
+    private PieDataset pieSet;
+    [Parameter]
+    public double UpCount { get; set; }
+    [Parameter]
+    public double DownCount { get; set; }
+    [Parameter]
+    public double OtherCount { get; set; }
+
+    private int NumberOfUpCount = 0;
+    private int NumberOfDownCount = 0;
+    private int NumberOfOtherCount = 0;
+
+    Dictionary<string, DateRange>
+    DateRanges => new Dictionary<string, DateRange>
+        {
+        { "This month", new DateRange
+        {
+        Start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1),
+        End = DateTime.Today.AddDays(1).AddTicks(-1)
+        }
+        },
+        { "Last 3 months", new DateRange
+        {
+        Start = DateTime.Today.AddMonths(-3).AddTicks(-1),
+        End = DateTime.Today.AddDays(1).AddTicks(-1)
+        }
+        },{ "Last 6 months", new DateRange
+        {
+        Start = DateTime.Today.AddMonths(-6).AddTicks(-1),
+        End = DateTime.Today.AddDays(1).AddTicks(-1)
+        }
+        },{ "One year ago", new DateRange
+        {
+        Start = DateTime.Today.AddYears(-1).AddMonths(-1),
+        End = DateTime.Today.AddDays(1).AddTicks(-1)
+        }
+        }
+                    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoaded = true;
+        _config = new PieConfig
+        {
+            Options = new PieOptions
+            {
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Uptime Performace Chart (Per set )"
+                },
+                Responsive = true,
+                Animation = new ArcAnimation
+                {
+                    AnimateRotate = true,
+                    AnimateScale = true
+                }
+            }
+        };
+
+        _config.Data.Labels.AddRange(new[] { "Uptime", "Downtime", "Supervising" });
+
+        pieSet = new PieDataset
+        {
+            //, ColorUtil.ColorString(255, 193, 7)-Yellow
+            BackgroundColor = new[] { ColorUtil.ColorString(40, 167, 69), ColorUtil.ColorString(220, 53, 69), ColorUtil.ColorString(255, 193, 7) },
+            BorderWidth = 0,
+            HoverBackgroundColor = ColorUtil.RandomColorString(),
+            HoverBorderColor = ColorUtil.RandomColorString(),
+            HoverBorderWidth = 1,
+            BorderColor = "#ffffff",
+        };
+        var rand = new Random();
+        UpCount = rand.Next(8, 10);
+        DownCount = rand.Next(3, 7);
+        // OtherCount = rand.Next(1, 4);
+
+        Machines = await service.GetDeviceNames();
+        TempStore = Machines;
+        pieSet.Data.AddRange(new double[] { UpCount, DownCount });
+        _config.Data.Datasets.Add(pieSet);
+        // Machines = Machines.Where(m => m.ToLower().Contains(SearchTerm.ToLower())).ToList();
+        StateHasChanged();
+
+    }
+
+    List<string> Machines { get; set; } = new List<string>();
+    private string searchTerm;
+    public string SearchTerm
+    {
+        get { return searchTerm; }
+        set
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm)) { Machines = TempStore; }
+            searchTerm = value;
+            Filter();
+        }
+    }
+    //
+
+    private bool isLoaded = false;
+    private async Task FetchRecord(string name)
+    {
+        _config.Data.Datasets.Clear();
+        pieSet = new PieDataset
+        {
+            //, ColorUtil.ColorString(255, 193, 7)-Yellow
+            BackgroundColor = new[] { ColorUtil.ColorString(40, 167, 69), ColorUtil.ColorString(220, 53, 69), ColorUtil.ColorString(255, 193, 7) },
+            BorderWidth = 0,
+            HoverBackgroundColor = ColorUtil.ColorString(53, 67, 220),//  ColorUtil.RandomColorString(),
+            HoverBorderColor = ColorUtil.RandomColorString(),
+            HoverBorderWidth = 1,
+            BorderColor = "#ffffff",
+        };
+        var stats = await service.GetDeviceStats(name, StartDate, EndDate);
+
+        UpCount = (double)stats.Performace;
+        DownCount = (double)stats.NegPerformace;
+        OtherCount = (double)stats.OtherPerformace;
+        NumberOfUpCount = (int)stats.UpCount;
+        NumberOfDownCount = (int)stats.DownCount;
+        NumberOfOtherCount = (int)stats.OtherCount;
+        Name = name;// Machines[rand.Next(Machines.Length)];
+        pieSet.Data.AddRange(new double[] { UpCount, DownCount, OtherCount });
+        _config.Data.Datasets.Add(pieSet);
+
+        //isLoaded = (UpCount + DownCount) > 0;
+        //if (isLoaded)
+        //{
+        //    _config.Data.Datasets.Add(pieSet);
+        //}
+
+        StateHasChanged();
+
+    }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // isLoading = false;
+            StateHasChanged();
+        }
+        base.OnAfterRender(firstRender);
+    }
+    List<string> TempStore { get; set; } = new List<string>();
+    private void Filter()
+    {
+        TempStore = Machines;
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+            Machines = Machines.Where(m => m.ToLower().Contains(searchTerm.ToLower())).ToList();
+        else
+            Machines = TempStore;
+    }
+
+    public void Refresh()
+    {
+        Machines = service.GetDeviceNames().Result;
+    }
+
+}

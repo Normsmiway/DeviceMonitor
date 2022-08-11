@@ -1,0 +1,41 @@
+﻿<div class="col-lg-12 text-center position-relative">
+    <div class="icon avatar-70 m-auto  @statusValue rounded-circle line-height-7 text-center">
+        <i class="@iconEffect">
+            @if (DeviceStatus != "down")
+            {
+                <span class="@bg dots"></span>
+            }
+
+        </i>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string DeviceStatus { get; set; }
+
+    private string statusValue
+    {
+        get
+        {
+            return DeviceStatus == "down"  ? "bg-close iq-border-close" : DeviceStatus == "up" ? "bg-success iq-border-success" : "bg-warning iq-border-warning";
+        }
+    }
+
+    private string bg
+    {
+        get
+        {
+            return DeviceStatus == "up" ? "bg-success" : "bg-close";
+        }
+    }
+    private string iconEffect
+    {
+        get
+        {
+            return DeviceStatus == "down" ? "ri-close-line" : DeviceStatus == "up" ? "iq-waves-effect rounded ri-check-line" : "iq-waves-effect rounded ri-task-line";
+        }
+    }
+}
+
+

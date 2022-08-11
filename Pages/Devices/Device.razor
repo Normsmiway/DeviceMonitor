@@ -1,0 +1,70 @@
+﻿
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Historical Data for @Model.Name</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>@Model.Name</p>
+                <p>@Model.NetworkStatus </p>
+                <p>@Model.ReceiptPaper </p>
+                <p>@Model.ReceiptPrinter </p>
+                <p>@Model.Status</p>
+                <p>@Model.ReceiptPaper</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@*<div class="col-lg-3" @onclick="(()=> { })" data-toggle="modal" data-target=".bd-example-modal-lg">*@
+<Animate OptionsName="@Model.Status" class="col-sm-12 col-md-6 col-lg-3">
+    @*<div class="col-lg-3" @onclick="(()=> { })">*@
+        <div class="iq-navbar-custom">
+            <nav class="navbar navbar-expand-lg navbar-light p-0">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto navbar-list">
+                        <li class="nav-item nav-icon">
+                            <div class="col-lg-12">
+                                <div class="iq-card iq-card-block iq-card-stretch iq-card-height">
+                                    <div class="iq-card-body">
+                                        <div class="row">
+                                            <div class="col-lg-12 mt-3 text-center">
+                                                <h5> @Model.Name </h5>
+                                            </div>
+                                            <div class="col-lg-12 mt-3 text-center">
+
+                                            </div>
+                                            <Status DeviceStatus="@Model.Status" />
+                                        </div>
+                                        <CashJam Jam="@Model.CashJam" />
+                                    </div>
+
+                                    <CashLevel Level="@Model.CashLevel.Value" />
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    @*</div>*@
+</Animate>
+
+
+@* @onclick="(()=>task.IsComplete = !task.IsComplete)"*@
+@code{
+    [Parameter]
+    public DeviceModel Model { get; set; }
+}

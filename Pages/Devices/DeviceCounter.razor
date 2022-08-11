@@ -1,0 +1,37 @@
+﻿
+<Counter Text="Active" CssClass="bg-success" Count="upCount" Percentage="Math.Round(upCountPercentage)" TotalCount="count" />
+<Counter Text="Supervising" CssClass="bg-warning" Count="otherCount" Percentage="Math.Round(otherCountPercentage)" TotalCount="count" />
+<Counter Text="Inactive" CssClass="bg-close" Count="downCount" Percentage="Math.Round(downCountPercentage)" TotalCount="count" />
+
+<div class="col-sm-6 col-md-6 col-lg-3">
+    <div class="iq-card iq-card-block iq-card-stretch iq-card-height bg-danger">
+        <div class="iq-card-body iq-box-relative">
+            <div class="iq-service d-flex align-items-center justify-content-between">
+                <div class="service-data">
+                    <h2>@cashJam</h2>
+                    <p class="mb-0">Cash Jam</p>
+                </div>
+                <div id="service-chart-04" class="service-chart"><h4 class="text-white">@cashJam of @count</h4></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<DeviceModel> Devices { get; set; }
+    private int count => Devices.Count;
+
+    private int upCount => Devices.Where(d => d.Status.Equals("up")).Count();
+    private int downCount => Devices.Where(d => d.Status.Equals("down")).Count();
+    private int otherCount => Devices.Count - (upCount + downCount);
+
+    private decimal upCountPercentage => (upCount * 100) / (decimal)Devices.Count;
+
+    private decimal downCountPercentage => (downCount * 100) / (decimal)Devices.Count;
+
+    private decimal otherCountPercentage => 100 - (upCountPercentage + downCountPercentage);
+
+    private int cashJam => Devices.Where(d => d.CashJam == 0).Count();
+
+}

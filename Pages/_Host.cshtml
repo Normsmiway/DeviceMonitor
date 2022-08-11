@@ -1,0 +1,165 @@
+﻿@page "/"
+@namespace DeviceMonitorApp.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>DS Monitor360 Dashboard</title>
+    <base href="~/" />
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="images/favicon.ico" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- Typography CSS -->
+    <link rel="stylesheet" href="css/typography.css">
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="css/responsive.css">
+    <link href="_content/BlazorPro.Spinkit/spinkit.min.css" rel="stylesheet" />
+    <link href="_content/Blazored.Modal/blazored-modal.css" rel="stylesheet" />
+    <!-- Some styling -->
+    <link rel="stylesheet" href="_content/ChartJs.Blazor/ChartJSBlazor.css" />
+    <link rel="stylesheet" href="_content/BlazorDateRangePicker/daterangepicker.min.css" />
+</head>
+<body class="sidebar-main-active right-column-fixed">
+    <!-- loader Start -->
+    <div id="loading">
+        <div id="loading-center">
+        </div>
+    </div>
+    <!-- loader END -->
+    <app>
+        <component type="typeof(App)" render-mode="ServerPrerendered" />
+    </app>
+    <!-- Footer -->
+    <footer class="iq-footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6">
+                    <ul class="list-inline mb-0">
+                        <li class="list-inline-item"><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li class="list-inline-item"><a href="terms-of-service.html">Terms of Use</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-6 text-right">
+                    Copyright @DateTime.UtcNow.Year <a href="#">DSMonitor360</a> All Rights Reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Footer END -->
+    <!-- color-customizer -->
+    <div class="iq-colorbox color-fix">
+        <div class="buy-button"> <a class="color-full" href="#"><i class="fa fa-spinner fa-spin"></i></a> </div>
+        <div class="clearfix color-picker">
+            <h3 class="iq-font-black">Customer View</h3>
+            <p> </p>
+            <ul class="iq-colorselect clearfix">
+                <li class="color-1 iq-colormark" data-style="color-1"></li>
+                <li class="color-2" data-style="iq-color-2"></li>
+                <li class="color-3" data-style="iq-color-3"></li>
+                <li class="color-4" data-style="iq-color-4"></li>
+                <li class="color-5" data-style="iq-color-5"></li>
+                <li class="color-6" data-style="iq-color-6"></li>
+                <li class="color-7" data-style="iq-color-7"></li>
+                <li class="color-8" data-style="iq-color-8"></li>
+                <li class="color-9" data-style="iq-color-9"></li>
+                <li class="color-10" data-style="iq-color-10"></li>
+                <li class="color-11" data-style="iq-color-11"></li>
+                <li class="color-12" data-style="iq-color-12"></li>
+                <li class="color-13" data-style="iq-color-13"></li>
+                <li class="color-14" data-style="iq-color-14"></li>
+                <li class="color-15" data-style="iq-color-15"></li>
+                <li class="color-16" data-style="iq-color-16"></li>
+                <li class="color-17" data-style="iq-color-17"></li>
+                <li class="color-18" data-style="iq-color-18"></li>
+                <li class="color-19" data-style="iq-color-19"></li>
+                <li class="color-20" data-style="iq-color-20"></li>
+            </ul>
+            @*<a target="_blank" class="btn btn-primary d-block mt-3" href="">Purchase Now</a>*@
+        </div>
+    </div>
+    <!-- color-customizer END -->
+    <script src="_framework/blazor.server.js"></script>
+    <script src="_content/Blazored.Modal/blazored.modal.js"></script>
+    <script src="_content/BlazorAnimate/blazorAnimateInterop.js"></script>
+    <!-- Reference the included moment.js javascript file. -->
+    <script src="_content/ChartJs.Blazor/moment-with-locales.min.js" type="text/javascript" language="javascript"></script>
+    <!-- Reference the included ChartJs javascript file. -->
+    <script src="_content/ChartJs.Blazor/Chart.min.js" type="text/javascript" language="javascript"></script>
+    <!-- This is the glue between the C# code and the ChartJs charts -->
+    <script src="_content/ChartJs.Blazor/ChartJsBlazorInterop.js" type="text/javascript" language="javascript"></script>
+    <script src="_content/BlazorTable/BlazorTable.min.js"></script>
+    <script src="_content/BlazorDateRangePicker/clickAndPositionHandler.js"></script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <!-- Appear JavaScript -->
+    <script src="js/jquery.appear.js"></script>
+    <!-- Countdown JavaScript -->
+    <script src="js/countdown.min.js"></script>
+    <!-- Counterup JavaScript -->
+    <script src="js/waypoints.min.js"></script>
+    <script src="js/jquery.counterup.min.js"></script>
+    <!-- Wow JavaScript -->
+    <script src="js/wow.min.js"></script>
+    <!-- Apexcharts JavaScript -->
+    <script src="js/apexcharts.js"></script>
+    <!-- Slick JavaScript -->
+    <script src="js/slick.min.js"></script>
+    <!-- Select2 JavaScript -->
+    <script src="js/select2.min.js"></script>
+    <!-- Owl Carousel JavaScript -->
+    <script src="js/owl.carousel.min.js"></script>
+    <!-- Magnific Popup JavaScript -->
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <!-- Smooth Scrollbar JavaScript -->
+    <script src="js/smooth-scrollbar.js"></script>
+    <!-- lottie JavaScript -->
+    <script src="js/lottie.js"></script>
+    <!-- am core JavaScript -->
+    <script src="js/core.js"></script>
+    <!-- am charts JavaScript -->
+    <script src="js/charts.js"></script>
+    <!-- am animated JavaScript -->
+    <script src="js/animated.js"></script>
+    <!-- am kelly JavaScript -->
+    <script src="js/kelly.js"></script>
+    <!-- am maps JavaScript -->
+    <script src="js/maps.js"></script>
+    <!-- am worldLow JavaScript -->
+    <script src="js/worldLow.js"></script>
+    <!-- Style Customizer -->
+    <script src="js/style-customizer.js"></script>
+    <!-- Chart Custom JavaScript -->
+    <script src="js/chart-custom.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="js/custom.js"></script>
+
+    <script>
+        // Wait until a 'reload' button appears
+        new MutationObserver((mutations, observer) => {
+            if (document.querySelector('#components-reconnect-modal h5 a')) {
+                // Now every 10 seconds, see if the server appears to be back, and if so, reload
+                async function attemptReload() {
+                    await fetch(''); // Check the server really is back
+                    location.reload();
+                }
+                observer.disconnect();
+                attemptReload();
+                setInterval(attemptReload, 10000);
+            }
+        }).observe(document.body, { childList: true, subtree: true });
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+﻿
+    <tr>
+        <td>
+            <h6>@Device.Name</h6>
+            @*<div class="btn iq-bg-danger mt-2">View Details</div>*@
+        </td>
+        <td class="text-center">
+            <div class="text-@iconBg font-size-24"><i class="@icon"></i></div>
+          
+        </td>
+        <td class="text-center">
+            <CashLevel Level="@Device.CashLevel.Value" />
+        </td>
+        <td class="text-center m-auto">
+            <div class="d-flex align-items-center justify-content-center">
+                <CashJam Jam="@Device.CashJam" />
+            </div>
+        </td>
+        <td class="text-center">
+            <div class="text-black">2018/03/29 07:25</div>
+        </td>
+    </tr>
+@code {
+    [Parameter]
+    public DeviceModel Device { get; set; }
+
+    private string icon { get { return Device.Status == Code.DeviceStatus.Up ? "ri-arrow-up-fill" : "ri-arrow-down-fill"; } }
+    private string iconBg { get { return Device.Status == Code.DeviceStatus.Up ? "success" : "danger"; } }
+    private string animate { get { return Device.Status == Code.DeviceStatus.Up ? "left" : "right"; } }
+}

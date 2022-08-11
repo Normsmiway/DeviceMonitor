@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeviceMonitorApp", "DeviceMonitorApp.csproj", "{C8A966F2-40F4-4D3C-87EC-024A3C1EACA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealDB.Lib", "..\RealDB.Lib\RealDB.Lib.csproj", "{96ACD693-29EB-453E-9128-A2050AA59D9C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C8A966F2-40F4-4D3C-87EC-024A3C1EACA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8A966F2-40F4-4D3C-87EC-024A3C1EACA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8A966F2-40F4-4D3C-87EC-024A3C1EACA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8A966F2-40F4-4D3C-87EC-024A3C1EACA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96ACD693-29EB-453E-9128-A2050AA59D9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96ACD693-29EB-453E-9128-A2050AA59D9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96ACD693-29EB-453E-9128-A2050AA59D9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96ACD693-29EB-453E-9128-A2050AA59D9C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BFE53C92-CA20-4581-8FA7-A77314A8399F}
+	EndGlobalSection
+EndGlobal

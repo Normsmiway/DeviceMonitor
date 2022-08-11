@@ -1,0 +1,58 @@
+﻿@inject IDeviceMockService service
+
+
+@if (!Devices.Any())
+{
+    <SpinLoader IsLoading="isLoading">
+        <LoadingTemplate>
+
+            <CircleFade Center="true" Color="#5b43c7" Size="3em" />
+
+        </LoadingTemplate>
+
+        <ContentTemplate>
+            <p><em>Loading...</em></p>
+        </ContentTemplate>
+    </SpinLoader>
+
+}
+else
+{
+    <DeviceCounter Devices="@Devices" />
+    @foreach (var device in Devices)
+    {
+        <Device Model="device"></Device>
+    }
+}
+
+
+
+
+
+
+
+@code {
+    List<DeviceModel> Devices;
+    private bool isLoading = true;
+    protected override async Task OnInitializedAsync()
+    {
+        //  this.service.OnDeviceStatusChanged += this.DeviceStatusChanged;
+        Devices = new List<DeviceModel>();
+        await foreach (var device in this.service.GetDevice())
+        {
+            Devices.Add(device); 
+            OrderDevice(Devices);
+            this.StateHasChanged();
+
+        }
+
+
+    }
+
+    private void OrderDevice(List<DeviceModel>
+        devices)
+    {
+        this.Devices = devices.OrderBy(d => d.Status)
+        .ThenBy(d => d.CashJam).ThenBy(c => c.CashLevel).ToList();
+    }
+}

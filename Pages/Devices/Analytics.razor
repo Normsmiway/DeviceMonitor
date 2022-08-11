@@ -1,0 +1,247 @@
+﻿@page "/analytics/test"
+
+@inject IDeviceService service;
+
+@if (Devices is null)
+{
+    <p><em>Loading...</em></p>
+}
+@if (isLoaded)
+{
+    @*<div class="col-lg-12"><PieChart UpCount="@upCount" DownCount="@downCount" OtherCount="@otherCount" /></div>*@
+    <nav aria-label="Page navigation example">
+        <ul class="pagination agination-lg justify-content-center">
+            <li class="page-item">
+                <button class="page-link" @onclick=@(async ()=>await NavigateToPage("previous"))>Previous</button>
+            </li>
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                var currentPage = i;
+                <li class="page-item"><button class="page-link @(currentPage==curPage?"btn-primary text-white":"")" @onclick=@(async () =>await refreshRecords(currentPage))>  @currentPage </button></li>
+
+                @*</button>*@
+            }
+            <li class="page-item">
+                <button class="page-link" @onclick=@(async ()=>await NavigateToPage("next"))>Next</button>
+            </li>
+        </ul>
+    </nav>
+}
+
+
+<DateRangePicker Drops="DropsType.Down" class="form-control form-control-sm" @bind-StartDate="StartDate" @bind-EndDate="EndDate">
+    <PickerTemplate>
+        <div id="@context.ParentId" @onclick="context.Toggle" style="background: #fff; cursor: pointer; padding: .45rem 10px; border: 1px solid #ccc; border-radius: 5px;">
+            <i class="oi oi-calendar"></i>&nbsp;
+            <span>
+                @if (context.TStartDate == null && context.TEndDate == null)
+                {
+                    <span>Select dates...</span>
+                }
+                else if (context.TStartDate != null && context.TEndDate == null)
+                {
+                    if (context.HoverDate > context.TStartDate)
+                    {
+                        @($"{context.TStartDate.Value.ToString(context.DateFormat)} - {context.HoverDate.Value.ToString(context.DateFormat)}")
+                        @($" - ({(context.HoverDate.Value.Subtract(context.TStartDate.Value).Days).ToString()} nights)")
+                    }
+                    else
+                    {
+                        <span>@context.TStartDate.Value.ToString("dd/MM/yyyy")</span>
+                    }
+                }
+                else
+                {
+                    <span>
+                        @context.FormattedRange @($" - ({(context.TEndDate.Value.Subtract(context.TStartDate.Value).Days).ToString()} nights)")
+                    </span>
+                }
+            </span>
+            <i class="oi oi-chevron-bottom float-right"></i>
+        </div>
+    </PickerTemplate>
+</DateRangePicker>
+
+
+<SpinLoader IsLoading="isLoading">
+    <LoadingTemplate>
+
+        <CircleFade Center="true" Color="#5b43c7" Size="3em" />
+
+    </LoadingTemplate>
+
+    <ContentTemplate>
+        <div class="col-lg-12">
+            <div class="iq-card iq-card-block iq-card-stretch iq-card-height">
+                <div class="iq-card-header d-flex justify-content-between">
+                    <div class="iq-header-title">
+                        <h4 class="card-title">Archive Records</h4>
+                    </div>
+                    <div class="iq-card-header-toolbar d-flex align-items-center">
+                        <div class="dropdown">
+                            <button class="btn bg-danger" @onclick="@FetchRecord">Fetch Records</button>
+                        </div>
+                    </div>
+                </div>
+
+                <Table Devices="@Devices" CurrentPage="@curPage" TotalPage="@totalPages" />
+
+            </div>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination agination-lg justify-content-center">
+                    <li class="page-item">
+                        <button class="page-link" @onclick=@(async ()=>await NavigateToPage("previous"))>Previous</button>
+                    </li>
+                    @for (int i = startPage; i <= endPage; i++)
+                    {
+                        var currentPage = i;
+                        <li class="page-item"><button class="page-link @(currentPage==curPage?"btn-primary text-white":"")" @onclick=@(async () =>await refreshRecords(currentPage))>  @currentPage </button></li>
+
+                        @*</button>*@
+                    }
+                    <li class="page-item">
+                        <button class="page-link" @onclick=@(async ()=>await NavigateToPage("next"))>Next</button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col-lg-12"><PieChart UpCount="@upCount" DownCount="@downCount" OtherCount="@otherCount" /></div>
+    </ContentTemplate>
+</SpinLoader>
+
+
+
+@code {
+    DateTimeOffset? StartDate { get; set; } = DateTime.Today.AddYears(-1).AddMonths(-1);
+    DateTimeOffset? EndDate { get; set; } = DateTime.Today.AddDays(1).AddTicks(-1);
+    List<DeviceModel> Devices;
+    private bool isLoading = true;
+    private int upCount;
+    private int downCount;
+    private int otherCount;
+    Dictionary<string, DateRange> DateRanges => new Dictionary<string, DateRange> {
+        { "This month", new DateRange
+                {
+                    Start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1),
+                    End = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddTicks(-1)
+                }
+            },
+        };
+    private bool isLoaded = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //display total page buttons
+
+        //  pageSize = 10;
+        curPage = 1;
+
+        Devices = await this.service.GetDevices((curPage - 1) * pageSize, pageSize, sortColumnName, sortDir, StartDate, EndDate);
+        upCount = Devices.Where(d => d.Status.Equals("up")).Count();
+        downCount = Devices.Where(d => d.Status.Equals("down")).Count();
+
+        totalRecords = await service.GetArchivesTotalCount();
+        totalPages = (int)Math.Ceiling(totalRecords / (decimal)pageSize);
+        if (totalPages > 20)
+        {
+            pagerSize = 20;
+        }
+        SetPagerSize("forward");
+        isLoaded = true;
+    }
+
+    private async Task FetchRecord()
+    {
+        //pageSize = 10;
+        curPage = 1;
+        Devices = await this.service.GetDevices((curPage - 1) * pageSize, pageSize, sortColumnName, sortDir, StartDate, EndDate);
+        upCount = Devices.Where(d => d.Status.Equals("up")).Count();
+        downCount = Devices.Where(d => d.Status.Equals("down")).Count();
+        otherCount = Devices.Count - (upCount + downCount);
+        totalRecords = await service.GetArchivesTotalCount();
+        totalPages = (int)Math.Ceiling(totalRecords / (decimal)pageSize);
+        SetPagerSize("forward");
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    public void SetPagerSize(string direction)
+    {
+        if (direction == "forward" && endPage < totalPages)
+        {
+            startPage = endPage + 1;
+            if (endPage + pagerSize < totalPages)
+            {
+                endPage = startPage + pagerSize - 1;
+            }
+            else
+            {
+                endPage = totalPages;
+            }
+            this.StateHasChanged();
+        }
+        else if (direction == "back" && startPage > 1)
+        {
+            endPage = startPage - 1;
+            startPage = startPage - pagerSize;
+        }
+    }
+
+    public async Task refreshRecords(int currentPage)
+    {
+        Devices = await service.GetDevices((currentPage - 1) * pageSize, pageSize, sortColumnName, sortDir, StartDate, EndDate);
+        upCount = Devices.Where(d => d.Status.Equals("up")).Count();
+        downCount = Devices.Where(d => d.Status.Equals("down")).Count();
+        otherCount = Devices.Count - (upCount + downCount);
+        curPage = currentPage;
+        this.StateHasChanged();
+    }
+
+
+    public async Task NavigateToPage(string direction)
+    {
+        if (direction == "next")
+        {
+            if (curPage < totalPages)
+            {
+                if (curPage == endPage)
+                {
+                    SetPagerSize("forward");
+                }
+                curPage += 1;
+            }
+        }
+        else if (direction == "previous")
+        {
+            if (curPage > 1)
+            {
+                if (curPage == startPage)
+                {
+                    SetPagerSize("back");
+                }
+                curPage -= 1;
+            }
+        }
+        await refreshRecords(curPage);
+    }
+
+    #region Pagination
+    int totalPages;
+    int totalRecords;
+    int curPage;
+    int pagerSize = 10;
+    int pageSize = 100;
+    int startPage;
+    int endPage;
+    string sortColumnName = "datetime_status";
+    string sortDir = "DESC";
+    #endregion
+}

@@ -1,0 +1,32 @@
+﻿@page "/search"
+
+<h3>Search</h3>
+<div class="row mt-5">
+    <div class="col-md-2">
+        @*<span>@issues</span>*@
+    </div>
+    <div class="col-md-8">
+        <EditForm Model="@searchTerm" OnValidSubmit="@SearchAsync">
+            <div class="form-group">
+                <label for="">Search</label>
+                <input type="text" class="form-control" @bind-value="@searchTerm" id="text" placeholder="Search Device">
+            </div>
+            <button type="submit" class="btn btn-primary justify-content-center">Submit</button>
+        </EditForm>
+    </div>
+    <div class="col-md-2">
+        @*<span>@issues</span>*@
+    </div>
+</div>
+
+@code {
+    private Random rnd = new Random();
+    Device issues = new Device();
+
+    string searchTerm { get; set; } = "";
+
+    async Task SearchAsync()
+    {
+      //return  Task.CompletedTask;
+    }
+}

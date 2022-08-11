@@ -1,0 +1,21 @@
+﻿@inherits LayoutComponentBase
+<!-- Wrapper Start -->
+<div class="wrapper">
+    <div class="iq-sidebar">
+        <NavMenu />
+    </div>
+
+    <!-- TOP Nav Bar -->
+    <div class="iq-top-navbar">
+        <TopNav />
+    </div>
+    <!-- TOP Nav Bar END -->
+    <!-- Page Content  -->
+    <div id="content-page" class="content-page">
+        <div class="container-fluid">
+            <div class="row">
+                @Body
+            </div>
+        </div>
+    </div>
+</div>

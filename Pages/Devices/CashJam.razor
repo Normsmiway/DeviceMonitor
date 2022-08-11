@@ -1,0 +1,14 @@
+﻿<a class="avatar-45 rounded-circle text-center ml-3 iq-bg-@bg font-size-18 float-right clearfix"><i class="ri-currency-line"></i></a>
+
+@code{
+    [Parameter]
+    public int Jam { get; set; }
+
+    private string bg
+    {
+        get
+        {
+            return Jam == 0 ? "danger" : "success";
+        }
+    }
+}

@@ -1,0 +1,20 @@
+﻿<div class="progress">
+    <div class="progress-bar progress-bar-striped progress-bar-animated bg-@bg" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: @(Level)%;">
+         @(Level)%      
+    </div>
+</div>
+
+
+
+@code{
+    [Parameter]
+    public int Level { get; set; }
+
+    private string bg
+    {
+        get
+        {
+            return Level <= 20 ? "danger" : Level < 50 ? "warning" : "success";
+        }
+    }
+}

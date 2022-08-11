@@ -1,0 +1,75 @@
+﻿@inject INotifier service
+@implements IDisposable
+
+@if (Devices is null)
+{
+    <p><em>Loading...</em></p>
+}
+
+
+
+<SpinLoader IsLoading="isLoading">
+    <LoadingTemplate>
+
+        <CircleFade Center="true" Color="#5b43c7" Size="3em" />
+
+    </LoadingTemplate>
+
+    <ContentTemplate>
+        <DeviceCounter Devices="@Devices" />
+        @foreach (var device in Devices)
+        {
+            <Device Model="device"></Device>
+        }
+    </ContentTemplate>
+</SpinLoader>
+
+
+
+@code {
+    List<DeviceModel>
+    Devices;
+    private bool isLoading = true;
+    protected override async Task OnInitializedAsync()
+    {
+        this.service.OnDeviceStatusChanged += this.DeviceStatusChanged;
+        var result = await this.service.GetDevices();
+        OrderDevice(result);
+
+    }
+    private async void DeviceStatusChanged(object sender, DeviceChangeEventArgs args)
+    {
+
+        var deviceToUpdate = this.Devices.FirstOrDefault(d => d.Id == args.NewDevice.Id);
+        if (deviceToUpdate == null)
+        {
+            this.Devices.Add(args.NewDevice);
+        }
+        else
+        {
+            deviceToUpdate.Update(args.NewDevice);
+        }
+        OrderDevice(Devices);
+        await InvokeAsync(() => { base.StateHasChanged(); });
+    }
+
+    public void Dispose()
+    {
+        this.service.OnDeviceStatusChanged += this.DeviceStatusChanged;
+    }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+        base.OnAfterRender(firstRender);
+    }
+    private void OrderDevice(List<DeviceModel>
+        devices)
+    {
+        this.Devices = devices.OrderBy(d => d.Status)
+        .ThenBy(d => d.CashJam).ThenBy(c => c.CashLevel).ToList();
+    }
+}
